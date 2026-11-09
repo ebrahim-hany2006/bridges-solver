@@ -3,6 +3,7 @@ from models.island import Island
 from models.candidateBridge import CandidateBridge
 from models.solution import Solution
 from validators.degree_validator import compute_degrees, check_degrees
+from validators.connectivity_checker import find_connected_components, is_connected
 
 class TestDegreeValidator(unittest.TestCase):
 
@@ -50,3 +51,37 @@ class TestDegreeValidator(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def generate_validation_report(puzzle_islands, candidate_bridges, solution):
+    """
+    تُصدر التقرير الشامل مطابقاً تماماً لـ Validation Report في الـ DATA_MODEL.md
+    """
+    from validators.degree_validator import check_degrees
+    
+    # 1. فحص الدرجات (Degree Violations) في وضع الـ final
+    degree_violations = check_degrees(puzzle_islands, candidate_bridges, solution, mode="final")
+    
+    # 2. فحص الاتصال (Connected Components)
+    components = find_connected_components(puzzle_islands, candidate_bridges, solution)
+    connected_components_count = len(components)
+    
+    # مبدئياً crossings و invalid_values يمكن جعلها فارغة لحين ربط بقية التاسكات
+    crossings = []
+    invalid_values = []
+    
+    # تحديد هل الحل صحيح بالكامل (valid) أم لا
+    is_valid = (
+        len(degree_violations) == 0 and
+        len(crossings) == 0 and
+        connected_components_count == 1 and
+        len(invalid_values) == 0
+    )
+    
+    return {
+        "valid": is_valid,
+        "degree_violations": degree_violations,
+        "crossings": crossings,
+        "connected_components": connected_components_count,
+        "invalid_values": invalid_values
+    }

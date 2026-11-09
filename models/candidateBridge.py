@@ -1,4 +1,4 @@
-class candidateBridge:
+class CandidateBridge:
     def __init__(self, bridge_id: str, from_island_id: str, to_island_id: str, orientation: str):
         self.id = str(bridge_id)
         self.from_island_id = str(from_island_id)
